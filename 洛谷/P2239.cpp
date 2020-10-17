@@ -1,0 +1,69 @@
+#include<cstdio>
+using namespace std;
+int n,x,y,nx,ny,s,f,flag=1;
+int main()
+{
+	scanf("%d%d%d",&n,&x,&y);
+	if(x==1)
+	{
+		printf("%d",y);
+		return 0;
+	}
+	nx=1;
+	ny=n;
+	s=n;
+	f=n-1;
+	while(1)
+	{
+		if(flag==1)
+		{
+			if(nx+f>=x&&ny==y)
+			{
+				printf("%d",s+x-nx);
+				break;
+			}
+			nx+=f;
+			s+=f;
+			flag=2;
+			continue;
+		}
+		if(flag==2)
+		{
+			if(nx==x&&ny-f<=y)
+			{
+				printf("%d",s+ny-y);
+				break;
+			}
+			ny-=f;
+			s+=f;
+			f--;
+			flag=3;
+			continue;
+		}
+		if(flag==3)
+		{
+			if(nx-f<=x&&ny==y)
+			{
+				printf("%d",s+nx-x);
+				break;
+			}
+			nx-=f;
+			s+=f;
+			flag=4;
+			continue;
+		}
+		if(flag==4)
+		{
+			if(nx==x&&ny+f>=y)
+			{
+				printf("%d",s+y-ny);
+				break;
+			}
+			ny+=f;
+			s+=f;
+			f--;
+			flag=1;
+		}
+	}
+	return 0;
+}
