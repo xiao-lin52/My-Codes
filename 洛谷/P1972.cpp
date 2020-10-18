@@ -1,28 +1,18 @@
+//MD我真是见鬼了，这道题居然卡莫队，卡了一下午常数都没卡过去，最慢的一个点1.65s
+//chen_zhe你不厚道！！！
 #include<bits/stdc++.h>
 #define N 1000010
+#define re register int
 using namespace std;
-inline void read(int &x)
+inline char get_char()
 {
-	register char ch=getchar();
-	while(!isdigit(ch)) ch=getchar();
-	while(isdigit(ch)) { x=x*10+ch-'0'; ch=getchar(); }
+    static char buf[1000001],*p1=buf,*p2=buf;
+    return p1==p2&&(p2=(p1=buf)+fread(buf,1,1000000,stdin),p1==p2)?EOF:*p1++;
 }
-inline void print(int x)
-{
-	if(!x)
-		putchar('0');
-	stack<char> st;
-	while(x)
-	{
-		st.push(x%10+'0');
-		x/=10;
-	}
-	while(st.size())
-	{
-		putchar(st.top());
-		st.pop();
-	}
-	putchar('\n');
+inline void read(int &num){
+    register char c;
+    while(isspace(c=get_char()));
+    while(num=num*10+c-48,isdigit(c=get_char()));
 }
 struct query
 {
@@ -31,53 +21,37 @@ struct query
 	int id;
 };
 query q[N];
-int n,m,len,l=1,r,num,ans[N],cnt[N],a[N],belong[1010];
+int n,m,ans[N],cnt[N],a[N],belong[N];
 inline bool cmp(query a,query b)
 {
 	return (belong[a.x]^belong[b.x]) ? belong[a.x]<belong[b.x] : ((belong[a.x]&1) ? a.y<b.y : a.y>b.y);
 }
-inline void add(int x)
-{
-	if(!cnt[a[x]])
-		num++;
-	cnt[a[x]]++;
-}
-inline void del(int x)
-{
-	cnt[a[x]]--;
-	if(!cnt[a[x]])
-		num--;
-}
 int main()
 {
 	read(n);
-	len=sqrt(n);
-	for(int i=1;i<=n;i++)
-	{
+	for(re i=1;i<=n;++i)
 		read(a[i]);
-		belong[i]=(i-1)/len+1;
-	}
 	read(m);
-	for(int i=1;i<=m;i++)
-	{
-		read(q[i].x);
-		read(q[i].y);
-		q[i].id=i;
-	}
+	re len=n/sqrt(m);
+	for(re i=1;i<=m;++i)
+		read(q[i].x),read(q[i].y),q[i].id=i;
+	for(re i=1;i<=n;i+=4)
+		belong[i]=(i-1)/len+1,belong[i+1]=i/len+1,belong[i+2]=(i+1)/len+1,belong[i+3]=(i+2)/len+1;
 	sort(q+1,q+1+m,cmp);
-	for(int i=1;i<=m;i++)
+	register int l=1,r=0,num=0;
+	for(re i=1;i<=m;++i)
 	{
-		while(l>q[i].x)
-			num+=!cnt[a[--l]]++;
 		while(l<q[i].x)
 			num-=!--cnt[a[l++]];
-		while(r>q[i].y)
-			num-=!--cnt[a[r--]];
+		while(l>q[i].x)
+			num+=!cnt[a[--l]]++;
 		while(r<q[i].y)
 			num+=!cnt[a[++r]]++;
+		while(r>q[i].y)
+			num-=!--cnt[a[r--]];
 		ans[q[i].id]=num;
 	}
-	for(int i=1;i<=m;i++)
-		print(ans[i]);
+	for(re i=1;i<=m;++i)
+		printf("%d\n",ans[i]);
 	return 0;
 }
