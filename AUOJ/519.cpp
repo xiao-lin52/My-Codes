@@ -20,8 +20,8 @@ inline void push_up(int i)
 inline void push_down(int i)
 {
 	int ls=i<<1,rs=i<<1|1;
-	tree[ls].data=((tree[ls].data*tree[i].mul%p)+tree[i].add)%p;
-	tree[rs].data=((tree[rs].data*tree[i].mul%p)+tree[i].add)%p;
+	tree[ls].data=(tree[ls].data*tree[i].mul%p+tree[i].add*(tree[ls].r-tree[ls].l+1)%p)%p;
+	tree[rs].data=(tree[rs].data*tree[i].mul%p+tree[i].add*(tree[rs].r-tree[rs].l+1)%p)%p;
 	tree[ls].add=((tree[ls].add*tree[i].mul%p)+tree[i].add)%p;
 	tree[rs].add=((tree[rs].add*tree[i].mul%p)+tree[i].add)%p;
 	tree[ls].mul=tree[ls].mul*tree[i].mul%p;
@@ -42,6 +42,7 @@ void build(int i,int l,int r)
 	int mid=(l+r)>>1;
 	build(i<<1,l,mid);
 	build(i<<1|1,mid+1,r);
+	push_up(i);
 }
 void update_mul(int i,int l,int r,ll k)
 {
@@ -63,7 +64,7 @@ void update_add(int i,int l,int r,ll k)
 {
 	if(tree[i].l>=l&&tree[i].r<=r)
 	{
-		tree[i].data=(tree[i].data+k)%p;
+		tree[i].data=(tree[i].data+k*(tree[i].r-tree[i].l+1))%p;
 		tree[i].add=(tree[i].add+k)%p;
 		return;
 	}
