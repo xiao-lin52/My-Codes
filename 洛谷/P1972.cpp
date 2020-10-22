@@ -120,7 +120,7 @@ namespace IO{
     #undef BUF_SIZE
 };
 using namespace IO;
-int n,m,ans[N],cnt[N],a[N],belong[N];
+int n,m,len,ans[N],cnt[N],a[N];
 struct query
 {
 	int x;
@@ -128,7 +128,7 @@ struct query
 	int id;
     bool operator < (query const &a) const
     {
-        return (belong[x]^belong[a.x]) ? belong[x]<belong[a.x] : (belong[x]&1) ? y<a.y : y>a.y;
+        return ((x/len)^(a.x/len)) ? x/len<a.x/len : ((x/len)&1) ? y<a.y : y>a.y;
     }
 };
 query q[N];
@@ -138,19 +138,12 @@ int main()
 	for(re i=1;i<=n;++i)
 		read(a[i]);
 	read(m);
-	re len=sqrt(n);
+	len=sqrt(n);
 	for(re i=1;i<=m;++i)
 	{
         read(q[i].x);
         read(q[i].y);
         q[i].id=i;
-    }
-	for(re i=1;i<=n;i+=4)
-	{
-        belong[i]=(i-1)/len+1;
-        belong[i+1]=i/len+1;
-        belong[i+2]=(i+1)/len+1;
-        belong[i+3]=(i+2)/len+1;
     }
 	sort(q+1,q+1+m);
 	re l=1,r=0,num=0;
