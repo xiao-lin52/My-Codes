@@ -138,7 +138,7 @@ int main()
 	for(re i=1;i<=n;++i)
 		read(a[i]);
 	read(m);
-	len=sqrt(n);
+	len=2000;
 	for(re i=1;i<=m;++i)
 	{
         read(q[i].x);
