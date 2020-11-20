@@ -1,208 +1,194 @@
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
-const ll N=8e4+10,mod=1e6,inf=1e9;
-ll n,tot,ans,rt[2],val[N][2],num[N][2],fa[N][2],son[N][2][2];
-ll get(ll p,int q)
+const ll N=8e4+10,mod=1e6,inf=2147483648;
+struct Splay
 {
-	return val[p][q]>val[fa[p][q]][q];
-}
-void clear(ll p,int q)
-{
-	fa[son[p][0][q]][q]=fa[son[p][1][q]][q]=fa[p][q];
-	son[fa[p][q]][get(p,q)][q]=0;
-	val[p][q]=num[p][q]=fa[p][q]=son[p][0][q]=son[p][1][q]=0;
-}
-void spin(ll p,int q)
-{
-	ll x=fa[p][q],y=fa[x][q],s=get(p,q);
-	son[y][get(x,q)][q]=p;
-	fa[x][q]=p;
-	fa[p][q]=y;
-	fa[son[p][s^1][q]][q]=x;
-	son[x][s][q]=son[p][s^1][q];
-	son[p][s^1][q]=x;
-}
-void splay(ll p,int q)
-{
-	for(int f;f=fa[p][q];spin(p,q))
-		if(fa[f][q])
-			spin((get(f,q)==get(p,q) ? f : p),q);
-	rt[q]=p;
-}
-void find(ll k,int q)
-{
-	ll p=rt[q];
-	while(1)
+	ll rt,tot,val[N],son[N][2],fa[N];
+	ll empty()
 	{
-		if(!p)
-			return;
-		if(val[p][q]==k)
-		{
-			splay(p,q);
-			return;
-		}
-		else if(val[p][q]>k)
-			p=son[p][0][q];
-		else
-			p=son[p][1][q];
+		return rt;
 	}
-}
-void ins(ll k,int q)
-{
-	if(!rt[q])
+	ll get(ll p)
 	{
-		rt[q]=++tot;
-		val[rt[q]][q]=k;
-		num[rt[q]][q]=1;
-		return;
+		return val[p]>val[fa[p]];
 	}
-	ll p=rt[q],f=0;
-	while(1)
+	void clear(ll p)
 	{
-		if(!p)
+		son[fa[p]][get(p)]=son[p][0] ? son[p][0] : son[p][1];
+		fa[son[p][0]]=fa[son[p][1]]=fa[p];
+		fa[p]=val[p]=0;
+	}
+	void spin(ll p)
+	{
+		ll x=fa[p],y=fa[x],s=get(p);
+		son[y][get(x)]=p;
+		fa[x]=p;
+		fa[p]=y;
+		fa[son[p][s^1]]=x;
+		son[x][s]=son[p][s^1];
+		son[p][s^1]=x;
+	}
+	void splay(ll p)
+	{
+		for(ll f;f=fa[p];spin(p))
+			if(fa[f])
+				spin(get(p)==get(f) ? f : p);
+		rt=p;
+	}
+	void find(ll k)
+	{
+		ll p=rt;
+		while(1)
 		{
-			p=++tot;
-			val[p][q]=k;
-			num[p][q]=1;
-			fa[p][q]=f;
-			son[f][get(p,q)][q]=p;
-			splay(p,q);
+			if(!p)
+				return;
+			if(val[p]==k)
+				break;
+			ll t=(val[p]<k);
+			p=son[p][t];
+		}
+		splay(p);
+	}
+	void ins(ll k)
+	{
+		if(!rt)
+		{
+			rt=++tot;
+			val[rt]=k;
 			return;
 		}
-		if(val[p][q]==k)
+		ll p=rt,f=0;
+		while(1)
 		{
-			num[p][q]++;
-			splay(p,q);
-			return;
-		}
-		ll t=(val[p][q]<k);
-		f=p;
-		p=son[p][t][q];
-	}
-}
-ll getpre(ll k,int q)
-{
-	ll p=rt[q],res=-inf,j=0;
-	while(1)
-	{
-		if(!p)
-		{
-			if(j)
-				splay(j,q);
-			return res;
-		}
-		if(val[p][q]>k)
-			p=son[p][0][q];
-		else
-		{
-			if(res<val[p][q])
+			if(!p)
 			{
-				res=val[p][q];
-				j=p;
+				p=++tot;
+				val[p]=k;
+				fa[p]=f;
+				son[fa[p]][get(p)]=p;
+				break;
 			}
-			p=son[p][1][q];
+			ll t=(val[p]<k);
+			f=p;
+			p=son[p][t];
 		}
+		splay(p);
 	}
-}
-ll getsuf(ll k,int q)
-{
-	ll p=rt[q],res=inf,j=0;
-	while(1)
+	ll getpre(ll k)
 	{
-		if(!p)
+		ll p=rt,res=-inf,x=0;
+		while(1)
 		{
-			if(j)
-				splay(j,q);
-			return res;
+			if(!p)
+				break;
+			if(val[p]>k)
+				p=son[p][0];
+			else
+			{
+				if(val[p]>res)
+				{
+					res=val[p];
+					x=p;
+				}
+				p=son[p][1];
+			}
 		}
-		if(val[p][q]<k)
-			p=son[p][1][q];
+		if(x)
+			splay(x);
+		return res;
+	}
+	ll getsuf(ll k)
+	{
+		ll p=rt,res=inf,x=0;
+		while(1)
+		{
+			if(!p)
+				break;
+			if(val[p]<k)
+				p=son[p][1];
+			else
+			{
+				if(val[p]<res)
+				{
+					res=val[p];
+					x=p;
+				}
+				p=son[p][0];
+			}
+		}
+		if(x)
+			splay(x);
+		return res;
+	}
+	void del(ll k)
+	{
+		getpre(k);
+		if(!son[rt][0]&&!son[rt][1])
+			rt=0;
+		else if(!son[rt][0])
+		{
+			ll x=son[rt][1];
+			clear(rt);
+			rt=x;
+		}
+		else if(!son[rt][1])
+		{
+			ll x=son[rt][0];
+			clear(rt);
+			rt=x;
+		}
 		else
 		{
-			if(res>val[p][q])
-			{
-				res=val[p][q];
-				j=p;
-			}
-			p=son[p][0][q];
+			ll x=rt;
+			getpre(val[rt]-1);
+			clear(x);
 		}
 	}
-}
-void del(ll k,int q)
-{
-	find(k,q);
-	if(num[rt[q]][q]>1)
-	{
-		num[rt[q]][q]--;
-		return;
-	}
-	if(!son[rt[q]][0][q]&&!son[rt[q]][1][q])
-	{
-		rt[q]=0;
-		clear(rt[q],q);
-	}
-	else if(!son[rt[q]][0][q])
-	{
-		ll t=son[rt[q]][1][q];
-		clear(rt[q],q);
-		rt[q]=t;
-	}
-	else if(!son[rt[q]][1][q])
-	{
-		ll t=son[rt[q]][0][q];
-		clear(rt[q],q);
-		rt[q]=t;
-	}
-	else
-	{
-		ll p=son[rt[q]][1][q];
-		getpre(k,q);
-		clear(son[rt[q]][1][q],q);
-		son[rt[q]][1][q]=p;
-	}
-}
-int main()
+};
+Splay pet,people;
+ll n,ans;
+signed main()
 {
 	scanf("%lld",&n);
-	for(int i=1;i<=n;i++)
+	for(ll i=1;i<=n;i++)
 	{
-		ll op,x;
-		scanf("%lld%lld",&op,&x);
-		if(op==0)
-			if(rt[1])
+		ll a,b;
+		scanf("%lld%lld",&a,&b);
+		if(a==0)
+			if(people.empty())
 			{
-				ll t1=getpre(x,1),t2=getsuf(x,1);
-				if(x-t1<=t2-x)
+				ll x=people.getpre(b),y=people.getsuf(b);
+				if(b-x<=y-b)
 				{
-					ans=(ans+x-t1)%mod;
-					del(t1,1);
+					ans=(ans+b-x)%mod;
+					people.del(x);
 				}
 				else
 				{
-					ans=(ans+t2-x)%mod;
-					del(t2,1);
+					ans=(ans+y-b)%mod;
+					people.del(y);
 				}
 			}
 			else
-				ins(x,0);
+				pet.ins(b);
 		else
-			if(rt[0])
+			if(pet.empty())
 			{
-				ll t1=getpre(x,0),t2=getsuf(x,0);
-				if(x-t1<=t2-x)
+				ll x=pet.getpre(b),y=pet.getsuf(b);
+				if(b-x<=y-b)
 				{
-					ans=(ans+x-t1)%mod;
-					del(t1,0);
+					ans=(ans+b-x)%mod;
+					pet.del(x);
 				}
 				else
 				{
-					ans=(ans+t2-x)%mod;
-					del(t2,0);
+					ans=(ans+y-b)%mod;
+					pet.del(y);
 				}
 			}
 			else
-				ins(x,1);
+				people.ins(b);
 	}
 	printf("%lld",ans);
 	return 0;
