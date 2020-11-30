@@ -3,34 +3,51 @@
 #define Col 1000010
 namespace IO
 {
-	void read(int &x)
+	char buf[1<<23],*p1=buf,*p2=buf;
+	#define getchar() (p1==p2&&(p2=(p1=buf)+fread(buf,1,1<<21,stdin),p1==p2)?EOF:*p1++)
+	#define isdigit(c) (c>=48&&c<=57)
+	#define isalpha(c) (c>=65&&c<=90)
+	template<typename T> inline void read(T &x)
 	{
 		x=0;
+		register int f=1;
 		register char ch=getchar();
 		while(!isdigit(ch))
+		{
+			if(ch==45)
+				f=-1;
 			ch=getchar();
+		}
 		while(isdigit(ch))
-			x=x*10+(ch^48),ch=getchar();
+		{
+			x=(x<<1)+(x<<3)+(ch^48);
+			ch=getchar();
+		}
+		x*=f;
 	}
-	void read(char &x)
+	inline void reads(char x[])
+	{
+		register int cnt=0;
+		register char ch=getchar();
+		while(!isalpha(ch))
+			ch=getchar();
+		while(isalpha(ch))
+		{
+			x[cnt]=ch;
+			cnt++;
+			ch=getchar();
+		}
+	}
+	inline void readc(char &x)
 	{
 		register char ch=getchar();
 		while(!isalpha(ch))
 			ch=getchar();
 		x=ch;
 	}
-	void print(int x)
+	template <typename T,typename... Args> inline void read(T& t, Args&... args)
 	{
-		if(!x)
-			putchar('0');
-		if(x<0)
-			putchar('-'),x=-x;
-		register int t=0,out[30];
-		while(x)
-			out[++t]=x%10,x/=10;
-		while(t)
-			putchar(out[t--]^48);
-		putchar('\n');
+		read(t);read(args...);
 	}
 }
 using namespace IO;
@@ -56,9 +73,8 @@ Query q[N];
 Change c[N];
 int main()
 {
-	read(n);
-	read(m);
-	len=(int)pow(n,2.0/3.0);
+	read(n,m);
+	len=2000;
 	for(int i=1;i<=n;i++)
 	{
 		read(a[i]);
@@ -68,9 +84,8 @@ int main()
 	{
 		char op;
 		int a,b;
-		read(op);
-		read(a);
-		read(b);
+		readc(op);
+		read(a,b);
 		if(op=='Q')
 			q[++k]=Query{a,b,lastc,k};
 		else
@@ -108,6 +123,6 @@ int main()
 		ans[q[i].id]=num;
 	}
 	for(int i=1;i<=k;i++)
-		print(ans[i]);
+		printf("%d\n",ans[i]);
 	return 0;
 }
