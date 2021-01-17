@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
-#define rep(i, l, r) for(int i = (l), i##end = (r); i <= i##end; i++)
-#define per(i, r, l) for(int i = (r), i##end = (l); i >= i##end; i--)
+#define rep(i, l, r) for(register int i = (l), i##end = (r); i <= i##end; i++)
+#define per(i, r, l) for(register int i = (r), i##end = (l); i >= i##end; i--)
 #define debug(x) cerr<<#x<<" = "<<x
 using namespace std;
 namespace IO
@@ -33,9 +33,9 @@ struct Matrix
 {
 	int h, l;
 	ll mat[3][3];
-	void init()
+	inline void init()
 	{
-		memset(mat, 0, sizeof(mat));
+		mat[0][0] = mat[0][1] = mat[1][0] = mat[1][1] = 0;
 	}
 	Matrix operator * (Matrix const &b) const
 	{
@@ -43,11 +43,11 @@ struct Matrix
 		res.init();
 		res.h = h;
 		res.l = b.l;
-		rep(i, 1, h)
-			rep(k, 1, l)
+		rep(i, 0, h-1)
+			rep(k, 0, l-1)
 			{
-				ll t = mat[i][k];
-				rep(j, 1, b.l)
+				int t = mat[i][k];
+				rep(j, 0, b.l-1)
 					res.mat[i][j] = (res.mat[i][j]+b.mat[k][j]*t%mod)%mod;
 			}
 		return res;
@@ -58,8 +58,8 @@ struct Matrix
 		res.init();
 		res.h = h;
 		res.l = l;
-		rep(i, 1, h)
-			rep(j, 1, l)
+		rep(i, 0, h-1)
+			rep(j, 0, l-1)
 				res.mat[i][j] = mat[i][j]*b%mod;
 		return res;
 	}
@@ -69,8 +69,8 @@ struct Matrix
 		res.init();
 		res.h = h;
 		res.l = l;
-		rep(i, 1, h)
-			rep(j, 1, l)
+		rep(i, 0, h-1)
+			rep(j, 0, l-1)
 				res.mat[i][j] = (mat[i][j]+b.mat[i][j])%mod;
 		return res;
 	}
@@ -109,8 +109,8 @@ void build(int p, int l, int r)
 	{
 		tree[p].qwq.h = tree[p].data.h = 1;
 		tree[p].qwq.l = tree[p].data.l = 2;
-		tree[p].qwq.mat[1][1] = fib[l-1];
-		tree[p].qwq.mat[1][2] = fib[l];
+		tree[p].qwq.mat[0][0] = fib[l-1];
+		tree[p].qwq.mat[0][1] = fib[l];
 		tree[p].data = tree[p].qwq*a[l];
 		return;
 	}
@@ -161,9 +161,9 @@ int main()
 		read(a[i]);
 	fib[1] = 1;
 	f[1].h = f[1].l = f[0].h = f[0].l = 2;
-	f[1].mat[1][2] = f[1].mat[2][1] = 1;
-	f[1].mat[1][1] = mod-1;
-	f[0].mat[1][1] = f[0].mat[2][2] = 1;
+	f[1].mat[0][1] = f[1].mat[1][0] = 1;
+	f[1].mat[0][0] = mod-1;
+	f[0].mat[0][0] = f[0].mat[1][1] = 1;
 	rep(i, 2, n)
 	{
 		f[i] = f[i-1]*f[1];
@@ -182,7 +182,7 @@ int main()
 		else if(op == 2)
 		{
 			Matrix ans = query(1, l, r);
-			printf("%lld\n", ans.mat[1][2]);
+			printf("%lld\n", ans.mat[0][1]);
 		}
 		else
 		{
