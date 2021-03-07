@@ -2,6 +2,43 @@
 #define get(x) (son[fa[x]][1] == x)
 #define isRoot(x) (son[fa[x]][0] != x && son[fa[x]][1] != x)
 using namespace std;
+namespace IO
+{
+	char buf[1<<23], *p1 = buf, *p2 = buf;
+	#define getchar() (p1 == p2 && (p2 = (p1 = buf)+fread(buf, 1, 1<<21, stdin), p1 == p2) ? EOF : *p1++)
+	#define isdigit(c) (c >= 48 && c <= 57)
+	#define isalpha(c) ((c >= 65 && c <= 90) || (c >= 97 && c <= 122))
+	template<typename T> inline void read(T &x)
+	{
+		x = 0;
+		register char ch = getchar();
+		while(!isdigit(ch))
+			ch = getchar();
+		while(isdigit(ch))
+		{
+			x = (x<<1)+(x<<3)+(ch^48);
+			ch = getchar();
+		}
+	}
+	inline void reads(char x[])
+	{
+		register int cnt = 0;
+		register char ch = getchar();
+		while(!isalpha(ch))
+			ch = getchar();
+		while(isalpha(ch))
+		{
+			x[cnt] = ch;
+			cnt++;
+			ch = getchar();
+		}
+	}
+	template <typename T,typename... Args> inline void read(T& t, Args&... args)
+	{
+		read(t);read(args...);
+	}
+}
+using namespace IO;
 typedef long long ll;
 const int N = 1e5 + 10, inf = INT_MAX;
 int n, m, son[N][2], fa[N], tag[N], st[N];
@@ -82,12 +119,13 @@ inline void cut(int u, int v)
 }
 int main()
 {
-	scanf("%d%d", &n, &m);
+	read(n, m);
 	while(m--)
 	{
 		char op[10];
 		int x, y;
-		scanf("%s%d%d", op, &x, &y);
+		reads(op);
+		read(x, y);
 		if(op[0] == 'Q')
 			printf("%s\n", find_root(x) == find_root(y) ? "Yes" : "No");
 		else if(op[0] == 'D')
